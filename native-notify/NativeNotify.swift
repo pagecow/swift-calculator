@@ -1,21 +1,41 @@
 // Native Notify — device registration (added by Agent Notify).
 //
-// Add this file to your app target (Xcode: File -> Add Files…), then call
-// NativeNotify.register(...) from
-// application(_:didRegisterForRemoteNotificationsWithDeviceToken:).
+// Add this file to your app target once: in Xcode choose
+// File -> Add Files to "SwiftCalculator"… and pick native-notify/NativeNotify.swift.
 //
-// Values come from your configuration (an xcconfig / Info.plist key) —
-// never commit them:
-//   NN_APP_ID, NN_APP_TOKEN
+// The app id is already filled in below. Paste your app token into
+// NativeNotifyConfig.appToken — dashboard -> Keys (left sidebar) has a Copy
+// button next to it. The token can send notifications to your users, so keep
+// this repository private.
 
 import Foundation
+
+// ── Paste your app token here ────────────────────────────────────────────────
+enum NativeNotifyConfig {
+    /// Your Native Notify app id (already filled in for Swift Calculator).
+    static let appId: Int = 33957
+    /// Replace the text between the quotes with your app token.
+    static let appToken: String = "PASTE_YOUR_APP_TOKEN_HERE"
+}
 
 enum NativeNotify {
     static let registerURL = URL(string: "https://app.nativenotify.com/api/universal/device/register")!
     static let deregisterURL = URL(string: "https://app.nativenotify.com/api/universal/device/deregister")!
 
-    static var appId: Int? { Int(Bundle.main.object(forInfoDictionaryKey: "NN_APP_ID") as? String ?? "") }
-    static var appToken: String? { Bundle.main.object(forInfoDictionaryKey: "NN_APP_TOKEN") as? String }
+    static var appId: Int? { NativeNotifyConfig.appId == 0 ? nil : NativeNotifyConfig.appId }
+    static var appToken: String? {
+        let token = NativeNotifyConfig.appToken
+        return (token.isEmpty || token.hasPrefix("PASTE")) ? nil : token
+    }
+
+    /// A stable id for this install, used to register and later refresh the device.
+    static var deviceId: String {
+        let key = "nn_device_id"
+        if let existing = UserDefaults.standard.string(forKey: key) { return existing }
+        let fresh = UUID().uuidString
+        UserDefaults.standard.set(fresh, forKey: key)
+        return fresh
+    }
 
     /// Register (or refresh) this device. [apnsToken] is the hex string
     /// handed to didRegisterForRemoteNotificationsWithDeviceToken.
@@ -27,7 +47,7 @@ enum NativeNotify {
     ) {
         guard let appId, let appToken else {
             completion(.failure(NSError(domain: "NativeNotify", code: 0,
-                userInfo: [NSLocalizedDescriptionKey: "NN_APP_ID / NN_APP_TOKEN missing from Info.plist"])))
+                userInfo: [NSLocalizedDescriptionKey: "Paste your app token into NativeNotifyConfig (native-notify/NativeNotify.swift)"])))
             return
         }
         var payload: [String: Any] = [
