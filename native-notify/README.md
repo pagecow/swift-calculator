@@ -20,11 +20,13 @@ Notify — you do not use Expo's push service or run any push infrastructure.
    `NativeNotifyConfig.appToken` in `native-notify/NativeNotify.swift`. The app
    id is already filled in for you. Keep the repository private — the token can
    send notifications to your users.
-2. **Add `native-notify/NativeNotify.swift` to the Xcode target** (File -> Add
-   Files to "SwiftCalculator"…). Permissions and the registration call are
-   already wired up in `SwiftCalculator/SwiftCalculatorApp.swift`: the app asks
-   for permission at launch and calls `NativeNotify.register(...)` as soon as
-   iOS hands it the APNs token.
+2. **Nothing to add in Xcode — the file is already part of the build.** The
+   project uses a synchronized folder for its sources, and
+   `native-notify/` is now added to it, so `NativeNotify.swift` compiles with
+   the app automatically. Permissions and the registration call are already
+   wired up in `SwiftCalculator/SwiftCalculatorApp.swift`: the app asks for
+   permission at launch and calls `NativeNotify.register(...)` as soon as iOS
+   hands it the APNs token.
 3. **Run the app on a real device**, let it register, then send your first push:
    click **Send push notification** in the setup guide's first-push card, or just
    ask Agent Notify (API: POST /api/universal/test-send). It is a REAL push
@@ -51,7 +53,7 @@ a fix:
 
 ## Checklist
 
-- [ ] Add the file to the Xcode target
+- [x] File is part of the app build (added automatically in project.pbxproj)
 - [ ] Enable the Push Notifications capability
 - [ ] Upload your APNs .p8 in Native Notify → settings
 - [ ] Send a push from Agent Notify and read the result
