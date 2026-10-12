@@ -15,13 +15,16 @@ Notify — you do not use Expo's push service or run any push infrastructure.
 
 ## Steps to finish (the agent cannot do these for you)
 
-1. **Get your app id + app token** from the Native Notify dashboard
-   (**Keys** in the left sidebar — each value has a Copy button). Put them in
-   your app's configuration:
-   - Add NN_APP_ID / NN_APP_TOKEN keys to Info.plist (values come from a build setting or an xcconfig kept out of git).
-2. **Get the device token** and call the registration function:
-   - Call `UIApplication.shared.registerForRemoteNotifications()` after permission is granted.
-   - In `didRegisterForRemoteNotificationsWithDeviceToken`, hex-encode the token and call `NativeNotify.register(...)`.
+1. **Get your app token** from the Native Notify dashboard (**Keys** in the
+   left sidebar — it has a Copy button) and paste it into
+   `NativeNotifyConfig.appToken` in `native-notify/NativeNotify.swift`. The app
+   id is already filled in for you. Keep the repository private — the token can
+   send notifications to your users.
+2. **Add `native-notify/NativeNotify.swift` to the Xcode target** (File -> Add
+   Files to "SwiftCalculator"…). Permissions and the registration call are
+   already wired up in `SwiftCalculator/SwiftCalculatorApp.swift`: the app asks
+   for permission at launch and calls `NativeNotify.register(...)` as soon as
+   iOS hands it the APNs token.
 3. **Run the app on a real device**, let it register, then send your first push:
    click **Send push notification** in the setup guide's first-push card, or just
    ask Agent Notify (API: POST /api/universal/test-send). It is a REAL push
