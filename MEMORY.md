@@ -90,3 +90,34 @@ Also: **three simulators are usually booted at once here** (iPhone 17 Pro, iPhon
 iPhone 17). `simctl`'s `booted` keyword then resolves to one of them arbitrarily — target
 by name or UDID when it matters, and read `simctl get_app_container` output to confirm
 which device you actually installed on.
+
+## 2026-10-12 10:09:43
+
+### Repo state + a machine-wide git gotcha
+
+The project is now a git repo: **https://github.com/pagecow/swift-calculator** (PRIVATE),
+remote `origin` over SSH (`git@github.com:pagecow/swift-calculator.git`), branch `main`,
+first commit `7d49307` ("Initial commit: SwiftUI calculator app", 12 files, 967 insertions).
+Visibility is private because that was the safe default — flip with
+`gh repo edit pagecow/swift-calculator --visibility public --accept-visibility-change-consequences`
+if the user wants it public.
+
+🔴 **`/usr/local/bin/git` is git 2.23.0 (2019) and it shadows the modern one**, so every
+`git` call in a login shell runs ancient git:
+
+| Path | Version |
+| --- | --- |
+| `/usr/local/bin/git` (wins on PATH) | **2.23.0** |
+| `/usr/bin/git` (Apple) | 2.54.0 |
+| Xcode toolchain git | 2.54.0 |
+
+Consequences hit in practice: `git init -b main` **fails with exit 129** (the `-b` flag
+landed in git 2.28), and the global `init.defaultBranch = main` setting is **silently
+ignored**, so a fresh `git init` creates `master`. Workaround that works on both versions:
+
+```bash
+git init && git symbolic-ref HEAD refs/heads/main
+```
+
+`/usr/local/bin/git` was left untouched — it is outside the project and may be there for
+another reason. Worth offering to fix (remove it, or put `/usr/bin` first on PATH).
