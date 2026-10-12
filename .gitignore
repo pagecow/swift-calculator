@@ -1,0 +1,21 @@
+# Xcode
+build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# macOS
+.DS_Store
+
+# Agent scratch files — never commit
+tmp/
